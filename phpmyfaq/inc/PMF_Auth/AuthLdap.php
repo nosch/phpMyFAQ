@@ -18,6 +18,7 @@
  * @package   PMF_Auth
  * @author    Alberto Cabello <alberto@unex.es>
  * @author    Lars Scheithauer <larsscheithauer@googlemail.com>
+ * @author    Michele Catalano <michele.catalano@mayflower.de>
  * @copyright 2009-2010 phpMyFAQ Team
  * @license   http://www.mozilla.org/MPL/MPL-1.1.html Mozilla Public License Version 1.1
  * @link      http://www.phpmyfaq.de
@@ -32,6 +33,7 @@
  * @package   PMF_Auth
  * @author    Alberto Cabello <alberto@unex.es>
  * @author    Lars Scheithauer <larsscheithauer@googlemail.com>
+ * @author    Michele Catalano <michele.catalano@mayflower.de>
  * @copyright 2009-2010 phpMyFAQ Team
  * @license   http://www.mozilla.org/MPL/MPL-1.1.html Mozilla Public License Version 1.1
  * @link      http://www.phpmyfaq.de
@@ -132,13 +134,15 @@ class PMF_Auth_AuthLdap extends PMF_Auth implements PMF_Auth_AuthDriver
     {
         global $PMF_LDAP;
         
-       $bindLogin = $login;
-       if ($PMF_LDAP['ldap_use_domain_prefix']) {
-           if (array_key_exists('domain', $optionalData)) {
-               $bindLogin = $optionalData['domain']."\\".$login;
-           }
-       }
-
+        $bindLogin = $login;
+        if ($PMF_LDAP['ldap_use_domain_prefix']) {
+            if (array_key_exists('domain', $optionalData)) {
+                $bindLogin = $optionalData['domain'] . '\\' . $login;
+            } else {
+                $bindLogin = $this->ldap->getDN($login);
+            }
+        }
+        
         $this->ldap = new PMF_Ldap($PMF_LDAP['ldap_server'],
                                    $PMF_LDAP['ldap_port'],
                                    $PMF_LDAP['ldap_base'],

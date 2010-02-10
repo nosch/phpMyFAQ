@@ -1,15 +1,8 @@
 <?php
 /**
  * The PMF_Ldap class provides methods and functions for a LDAP database
- *
- * @package    phpMyFAQ
- * @subpackage PMF_Ldap
- * @author     Adam Greene <phpmyfaq@skippy.fastmail.fm>
- * @author     Thorsten Rinne <thorsten@phpmyfaq.de>
- * @author     Alberto Cabello S�nchez <alberto@unex.es>
- * @author     Lars Scheithauer <larsscheithauer@googlemail.com>
- * @since      2004-12-16
- * @copyright  2004-2009 phpMyFAQ Team
+ * 
+ * PHP Version 5.2
  *
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
@@ -20,20 +13,34 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
  * License for the specific language governing rights and limitations
  * under the License.
+ *
+ * @category  phpMyFAQ
+ * @package   PMF_Ldap
+ * @author    Adam Greene <phpmyfaq@skippy.fastmail.fm>
+ * @author    Thorsten Rinne <thorsten@phpmyfaq.de>
+ * @author    Alberto Cabello Sanchez <alberto@unex.es>
+ * @author    Lars Scheithauer <larsscheithauer@googlemail.com>
+ * @author    Michele Catalano <michele.catalano@mayflower.de>
+ * @copyright 2004-2010 phpMyFAQ Team
+ * @license   http://www.mozilla.org/MPL/MPL-1.1.html Mozilla Public License Version 1.1
+ * @link      http://www.phpmyfaq.de
+ * @since     2004-12-16
  */
 
 /**
  * PMF_Ldap
  *
- * @package    phpMyFAQ
- * @subpackage PMF_Ldap
- * @author     Adam Greene <phpmyfaq@skippy.fastmail.fm>
- * @author     Thorsten Rinne <thorsten@phpmyfaq.de>
- * @author     Alberto Cabello S�nchez <alberto@unex.es>
- * @author     Lars Scheithauer <larsscheithauer@googlemail.com>
- * @since      2004-12-16
- * @copyright  2004-2009 phpMyFAQ Team
- * @version    SVN: $Id$
+ * @category  phpMyFAQ
+ * @package   PMF_Ldap
+ * @author    Adam Greene <phpmyfaq@skippy.fastmail.fm>
+ * @author    Thorsten Rinne <thorsten@phpmyfaq.de>
+ * @author    Alberto Cabello Sanchez <alberto@unex.es>
+ * @author    Lars Scheithauer <larsscheithauer@googlemail.com>
+ * @author    Michele Catalano <michele.catalano@mayflower.de>
+ * @copyright 2004-2010 phpMyFAQ Team
+ * @license   http://www.mozilla.org/MPL/MPL-1.1.html Mozilla Public License Version 1.1
+ * @link      http://www.phpmyfaq.de
+ * @since     2004-12-16
  */
 class PMF_Ldap
 {
@@ -77,13 +84,15 @@ class PMF_Ldap
      */
     public function __construct($ldap_server, $ldap_port, $ldap_base, $ldap_user = '', $ldap_password = '')
     {
-    	global $PMF_LDAP;
-    	
+        global $PMF_LDAP;
+        
         $this->base = $ldap_base;
 
-        if (!isset($ldap_user) || !isset($ldap_server) || $ldap_server == "" || !isset($ldap_port) || $ldap_port == "" || !isset($ldap_base) || $ldap_base == "" || !isset($ldap_password)) {
+        if (!isset($ldap_user) || !isset($ldap_server) || $ldap_server == "" || 
+            !isset($ldap_port) || $ldap_port == "" || !isset($ldap_base) || $ldap_base == "" || 
+            !isset($ldap_password)) {
             return false;
-		}
+        }
 
         $this->ds = ldap_connect($ldap_server, $ldap_port);
         if (!$this->ds) {
@@ -93,12 +102,15 @@ class PMF_Ldap
 
         // optionally set Bind version
         if (isset($PMF_LDAP['ldap_options'])) {
-        	foreach ($PMF_LDAP['ldap_options'] as $key => $value) { 
-            	if (!ldap_set_option($this->ds, $key, $value)) {
-           			$this->error = 'Unable to set LDAP option "'.$key.'" to "'.$value.'" (Error: '.ldap_error($this->ds).')';
-                	$this->errno = ldap_errno($this->ds);
-            	}
-        	}
+            foreach ($PMF_LDAP['ldap_options'] as $key => $value) { 
+                if (!ldap_set_option($this->ds, $key, $value)) {
+                    $this->error = sprintf('Unable to set LDAP option "%s" to "%s" (Error: %s)',
+                        $key,
+                        $value,
+                        ldap_error($this->ds));
+                    $this->errno = ldap_errno($this->ds);
+                }
+            }
         }
 
         $ldapbind = ldap_bind($this->ds, $ldap_user, $ldap_password);
@@ -106,7 +118,7 @@ class PMF_Ldap
         if (!$ldapbind) {
             $this->error = 'Unable to bind to LDAP server (Error: '.ldap_error($this->ds).')';
             $this->errno = ldap_errno($this->ds);
-            $this->ds = false;
+            $this->ds    = false;
          }
     }
 
@@ -131,7 +143,18 @@ class PMF_Ldap
     {
         return $this->getLdapData($username, "name");
     }
-
+    
+    /**
+     * Returns the DN for the user from LDAP
+     *
+     * @param  string $username Username
+     * @return string
+     */
+    public function getDN($username)
+    {
+        return $this->getLdapData($username, 'dn');
+    }
+    
     /**
      * Returns the LDAP error message of the last LDAP command
      *
@@ -144,6 +167,7 @@ class PMF_Ldap
         }
         return ldap_error($ds);
     }
+    
     /**
      * Returns specific data from LDAP
      * 
@@ -157,8 +181,8 @@ class PMF_Ldap
         
         $values = array();
         
-        if (!array_key_exists($data, $PMF_LDAP['ldap_mapping'])) {
-            $this->error = 'requested datafield "' . $data . '" does not exist in $PMF_LDAP["ldap_mapping"].';
+        if (!array_key_exists($data, $PMF_LDAP['ldap_mapping']) || $data != 'dn') {
+            $this->error = 'Requested datafield "' . $data . '" does not exist in $PMF_LDAP["ldap_mapping"].';
             return '';
         }
         
@@ -178,9 +202,12 @@ class PMF_Ldap
             $this->error = 'Cannot get the value(s). Error: ' . ldap_error($this->ds);
         }
         
-        $values  = ldap_get_values($this->ds, $entryId, $fields[0]);
+        if ($data == 'dn') {
+            $values[0] = ldap_get_dn($this->ds, $entryId);
+        } else {
+            $values = ldap_get_values($this->ds, $entryId, $fields[0]);
+        }
         
         return $values[0];
     }
-    
 }
