@@ -3,7 +3,7 @@
  * This is the main functions file.
  *
  * PHP Version 5.2
- * 
+ *
  * The contents of this file are subject to the Mozilla Public License
  * Version 1.1 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -16,7 +16,7 @@
  *
  * Portions created by Matthias Sommerfeld are Copyright (c) 2001-2010 blue
  * birdy, Berlin (http://bluebirdy.de). All Rights Reserved.
- * 
+ *
  * @category  phpMyFAQ
  * @package   Core
  * @author    Thorsten Rinne <thorsten@phpmyfaq.de>
@@ -72,7 +72,7 @@ function pmf_debug($string)
         $debug = debug_backtrace();
         $ret   = '';
         if (isset($debug[2]['class'])) {
-        	$ret  = $debug[2]['file'] . ":<br />";
+            $ret  = $debug[2]['file'] . ":<br />";
             $ret .= $debug[2]['class'].$debug[1]['type'];
             $ret .= $debug[2]['function'] . '() in line ' . $debug[2]['line'];
             $ret .= ": <pre>" . $string . "</pre><br />\n";
@@ -119,8 +119,8 @@ function pmf_error_handler($level, $message, $filename, $line, $context)
     }
     // PHP 5.3.0+
     if (!defined('E_USER_DEPRECATED')) {
-        define('E_USER_DEPRECATED', 16384);        
-    }    
+        define('E_USER_DEPRECATED', 16384);
+    }
     $errorTypes = array(
         E_ERROR             => 'error',
         E_WARNING           => 'warning',
@@ -173,7 +173,7 @@ EOD;
             echo $errorMessage;
             break;
     }
-    
+
     return true;
 }
 
@@ -246,7 +246,7 @@ function checkForAddrMatchIpv4($ip, $network)
 
 /**
  * Performs a check if an IPv4 is banned
- * 
+ *
  * NOTE: This function does not support IPv6
  *
  * @param   string  IP
@@ -261,10 +261,10 @@ function IPCheck($ip)
         // currently we cannot handle IPv6
         return true;
     }
-    
+
     $listBannedIPs = PMF_Configuration::getInstance()->get('main.bannedIPs');
     $bannedIPs     = explode(' ', $listBannedIPs);
-    
+
     foreach ($bannedIPs as $oneIPorNetwork) {
         if (checkForAddrMatchIpv4($ip, $oneIPorNetwork)) {
             return false;
@@ -290,7 +290,7 @@ function getBannedWords()
     if (file_exists($bannedWordsFile) && is_readable($bannedWordsFile)) {
         $bannedWords = file_get_contents($bannedWordsFile);
     }
-    
+
     // Trim it
     foreach (explode("\n", $bannedWords) as $word) {
         $bannedTrimmedWords[] = trim($word);
@@ -391,7 +391,7 @@ function getHighlightedBannedWords($content)
  * These are the numbers of unique users who have perfomed
  * some activities within the last five minutes
  *
- * @param  integer $activityTimeWindow Optionally set the time window size in sec. 
+ * @param  integer $activityTimeWindow Optionally set the time window size in sec.
  *                                     Default: 300sec, 5 minutes
  * @return array
  */
@@ -457,324 +457,44 @@ function EndSlash($string)
  * Last Update: @@ Thorsten, 2004-07-17
  */
 if (!function_exists('quoted_printable_encode')) {
-	function quoted_printable_encode($return = '')
-	{
-	    // Ersetzen der lt. RFC 1521 noetigen Zeichen
-	    $return = PMF_String::preg_replace('/([^\t\x20\x2E\041-\074\076-\176])/ie', "sprintf('=%2X',ord('\\1'))", $return);
-	    $return = PMF_String::preg_replace('!=\ ([A-F0-9])!', '=0\\1', $return);
-	    // Einfuegen von QP-Breaks (=\r\n)
-	    if (PMF_String::strlen($return) > 75) {
-			$length = PMF_String::strlen($return); $offset = 0;
-			do {
-		    	$step     = 76;
-		    	$add_mode = (($offset+$step) < $length) ? 1 : 0;
-		    	$auszug   = PMF_String::substr($return, $offset, $step);
-		    	if (PMF_String::preg_match('!\=$!', $auszug)) {
-		    	    $step = 75;
-		    	}  
-		    	if (PMF_String::preg_match('!\=.$!', $auszug)) { 
-		    	    $step = 74;
-		    	}
-		    	if (PMF_String::preg_match('!\=..$!', $auszug)) {
-		    	    $step = 73;
-		    	}
-		    			    
-		    	$auszug     = PMF_String::substr($return, $offset, $step);
-		    	$offset    += $step;
-		    	$schachtel .= $auszug;
-		    	if (1 == $add_mode) $schachtel.= '='."\r\n";
-		    } while ($offset < $length);
-		
-		    $return = $schachtel;
-		}
-		
-	    $return = PMF_String::preg_replace('!\.$!', '. ', $return);
-	    return PMF_String::preg_replace('!(\r\n|\r|\n)$!', '', $return)."\r\n";
-	}
+    function quoted_printable_encode($return = '')
+    {
+        // Ersetzen der lt. RFC 1521 noetigen Zeichen
+        $return = PMF_String::preg_replace('/([^\t\x20\x2E\041-\074\076-\176])/ie', "sprintf('=%2X',ord('\\1'))", $return);
+        $return = PMF_String::preg_replace('!=\ ([A-F0-9])!', '=0\\1', $return);
+        // Einfuegen von QP-Breaks (=\r\n)
+        if (PMF_String::strlen($return) > 75) {
+            $length = PMF_String::strlen($return); $offset = 0;
+            do {
+                $step     = 76;
+                $add_mode = (($offset+$step) < $length) ? 1 : 0;
+                $auszug   = PMF_String::substr($return, $offset, $step);
+                if (PMF_String::preg_match('!\=$!', $auszug)) {
+                    $step = 75;
+                }
+                if (PMF_String::preg_match('!\=.$!', $auszug)) {
+                    $step = 74;
+                }
+                if (PMF_String::preg_match('!\=..$!', $auszug)) {
+                    $step = 73;
+                }
+
+                $auszug     = PMF_String::substr($return, $offset, $step);
+                $offset    += $step;
+                $schachtel .= $auszug;
+                if (1 == $add_mode) $schachtel.= '='."\r\n";
+            } while ($offset < $length);
+
+            $return = $schachtel;
+        }
+
+        $return = PMF_String::preg_replace('!\.$!', '. ', $return);
+        return PMF_String::preg_replace('!(\r\n|\r|\n)$!', '', $return)."\r\n";
+    }
 }
 
 
-/**
- * Get search data weither as array or resource
- *
- * @param string $searchterm
- * @param boolean $asResource
- * @param string $cat
- * @param boolean $allLanguages
- * 
- * @return array|resource
- */
-function getSearchData($searchterm, $asResource = false, $cat = '%', $allLanguages = true)
-{
-    $db       = PMF_Db::getInstance();
-    $LANGCODE = PMF_Language::$language;
-    $result   = null;  
-    $num      = 0;
-    $cond     = array(SQLPREFIX."faqdata.active" => "'yes'");
 
-    if ($cat != '%') {
-        $cond = array_merge(array(SQLPREFIX."faqcategoryrelations.category_id" => $cat), $cond);
-    }
-
-    if ((!$allLanguages) && (!is_numeric($searchterm))) {
-        $cond = array_merge(array(SQLPREFIX."faqdata.lang" => "'".$LANGCODE."'"), $cond);
-    }
-
-    if (is_numeric($searchterm)) {
-        // search for the solution_id
-        $result = $db->search(SQLPREFIX.'faqdata',
-                        array(SQLPREFIX.'faqdata.id AS id',
-                              SQLPREFIX.'faqdata.lang AS lang',
-                              SQLPREFIX.'faqdata.solution_id AS solution_id',
-                              SQLPREFIX.'faqcategoryrelations.category_id AS category_id',
-                              SQLPREFIX.'faqdata.thema AS thema',
-                              SQLPREFIX.'faqdata.content AS content'),
-                        SQLPREFIX.'faqcategoryrelations',
-                        array(SQLPREFIX.'faqdata.id = '.SQLPREFIX.'faqcategoryrelations.record_id',
-                              SQLPREFIX.'faqdata.lang = '.SQLPREFIX.'faqcategoryrelations.record_lang'),
-                        array(SQLPREFIX.'faqdata.solution_id'),
-                        $searchterm,
-                        $cond);
-    } else {
-        $result = $db->search(SQLPREFIX."faqdata",
-                        array(SQLPREFIX."faqdata.id AS id",
-                              SQLPREFIX."faqdata.lang AS lang",
-                              SQLPREFIX."faqcategoryrelations.category_id AS category_id",
-                              SQLPREFIX."faqdata.thema AS thema",
-                              SQLPREFIX."faqdata.content AS content"),
-                        SQLPREFIX."faqcategoryrelations",
-                        array(SQLPREFIX."faqdata.id = ".SQLPREFIX."faqcategoryrelations.record_id",
-                              SQLPREFIX."faqdata.lang = ".SQLPREFIX."faqcategoryrelations.record_lang"),
-                        array(SQLPREFIX."faqdata.thema",
-                              SQLPREFIX."faqdata.content",
-                              SQLPREFIX."faqdata.keywords"),
-                        $searchterm,
-                        $cond);
-    }
-
-    if ($result) {
-        $num = $db->num_rows($result);
-    }
-    
-    // Show the record with the solution ID directly
-    // Sanity checks: if a valid Solution ID has been provided the result set
-    //                will measure 1: this is true ONLY if the faq is not
-    //                classified among more than 1 category
-    if (is_numeric($searchterm) && ($searchterm >= PMF_SOLUTION_ID_START_VALUE) && ($num > 0)) {
-        // Hack: before a redirection we must force the PHP session update for preventing data loss
-        session_write_close();
-        if (PMF_Configuration::getInstance()->get('main.enableRewriteRules')) {
-            header('Location: '.PMF_Link::getSystemUri('/index.php').'/solution_id_'.$searchterm.'.html');
-        } else {
-            header('Location: '.PMF_Link::getSystemUri('/index.php').'/index.php?solution_id='.$searchterm);
-        }
-        exit();
-    }
-
-    if (0 == $num) {
-        $keys = PMF_String::preg_split("/\s+/", $searchterm);
-        $numKeys = count($keys);
-        $where = '';
-        for ($i = 0; $i < $numKeys; $i++) {
-            if (PMF_String::strlen($where) != 0 ) {
-                $where = $where." OR ";
-            }
-            $where = $where.'('.SQLPREFIX."faqdata.thema LIKE '%".$keys[$i]."%' OR ".SQLPREFIX."faqdata.content LIKE '%".$keys[$i]."%' OR ".SQLPREFIX."faqdata.keywords LIKE '%".$keys[$i]."%')";
-            if (is_numeric($cat)) {
-                $where .= ' AND '.SQLPREFIX.'faqcategoryrelations.category_id = '.$cat;
-            }
-            if (!$allLanguages) {
-                $where .= ' AND '.SQLPREFIX."faqdata.lang = '".$LANGCODE."'";
-            }
-        }
-
-        $where = " WHERE (".$where.") AND ".SQLPREFIX."faqdata.active = 'yes'";
-        $query = 'SELECT '.SQLPREFIX.'faqdata.id AS id, '.SQLPREFIX.'faqdata.lang AS lang, '.SQLPREFIX.'faqcategoryrelations.category_id AS category_id, '.SQLPREFIX.'faqdata.thema AS thema, '.SQLPREFIX.'faqdata.content AS content FROM '.SQLPREFIX.'faqdata LEFT JOIN '.SQLPREFIX.'faqcategoryrelations ON '.SQLPREFIX.'faqdata.id = '.SQLPREFIX.'faqcategoryrelations.record_id AND '.SQLPREFIX.'faqdata.lang = '.SQLPREFIX.'faqcategoryrelations.record_lang '.$where;
-        $result = $db->query($query);
-    }
-
-    return $asResource ? $result : $db->fetchAll($result);
-}
-
-/**
- * The main search function for the full text search
- *
- * TODO: add filter for (X)HTML tag names and attributes!
- *
- * @param   string  Text/Number (solution id)
- * @param   string  '%' to avoid any category filtering
- * @param   boolean true to search over all languages
- * @param   boolean true to disable the results paging
- * @param   boolean true to use it for Instant Response
- * @return  string
- * @access  public
- * @author  Thorsten Rinne <thorsten@phpmyfaq.de>
- * @author  Matteo Scaramuccia <matteo@phpmyfaq.de>
- * @author  Adrianna Musiol <musiol@imageaccess.de>
- * @since   2002-09-16
- */
-function searchEngine($searchterm, $cat = '%', $allLanguages = true, $hasMore = false, $instantRespnse = false)
-{
-    global $sids, $category, $PMF_LANG, $plr, $LANGCODE, $faq, $current_user, $current_groups;
-
-    $_searchterm = PMF_htmlentities(stripslashes($searchterm), ENT_QUOTES, 'utf-8');
-    $seite       = 1;
-    $output      = '';
-    $num         = 0;
-    $searchItems = array();
-    $langs       = (true == $allLanguages) ? '&amp;langs=all' : '';
-    $seite       = PMF_Filter::filterInput(INPUT_GET, 'seite', FILTER_VALIDATE_INT, 1);
-    $db          = PMF_Db::getInstance();
-    $faqconfig   = PMF_Configuration::getInstance();
-
-    $result = getSearchData(htmlentities($searchterm, ENT_COMPAT, 'utf-8'), true, $cat, $allLanguages);
-    $num    = $db->num_rows($result);
-
-    if (0 == $num) {
-        $output = $PMF_LANG['err_noArticles'];
-    }
-
-    $confPerPage = $faqconfig->get('main.numberOfRecordsPerPage');
-    
-    $pages = ceil($num / $confPerPage);
-    $last  = $seite * $confPerPage;
-    $first = $last - $confPerPage;
-    if ($last > $num) {
-        $last = $num;
-    }
-
-    if ($num > 0) {
-        $output .= '<p>'.$plr->GetMsg('plmsgSearchAmount', $num);
-        if ($hasMore && ($pages > 1)) {
-            $output .= sprintf($PMF_LANG['msgInstantResponseMaxRecords'], $confPerPage);
-        }
-        $output .= "</p>\n";
-        if (!$hasMore && ($pages > 1)) {
-            $output .= "<p><strong>".$PMF_LANG["msgPage"].$seite." ".$PMF_LANG["msgVoteFrom"]." ".$plr->GetMsg('plmsgPagesTotal',$pages)."</strong></p>";
-        }
-        $output .= "<ul class=\"phpmyfaq_ul\">\n";
-
-        $counter = 0;
-        $displayedCounter = 0;
-        while (($row = $db->fetch_object($result)) && $displayedCounter < $confPerPage) {
-            $counter ++;
-            if ($counter <= $first) {
-                continue;
-            }
-            $displayedCounter++;
-
-            $b_permission = false;
-            //Groups Permission Check
-            if ($faqconfig->get('main.permLevel') == 'medium') {
-                $perm_group = $faq->getPermission('group', $row->id);
-                foreach ($current_groups as $index => $value){
-                    if (in_array($value, $perm_group)) {
-                        $b_permission = true;
-                    }
-                }
-            }
-            if ($faqconfig->get('main.permLevel') == 'basic' || $b_permission) {
-                $perm_user = $faq->getPermission('user', $row->id);
-                foreach ($perm_user as $index => $value) {
-                    if ($value == -1) {
-                        $b_permission = true;
-                        break;
-                    } elseif (((int)$value == $current_user)) {
-                        $b_permission = true;
-                        break;
-                    } else {
-                        $b_permission = false;
-                    }
-                }
-            }
-            
-            if ($b_permission) {
-                $rubriktext  = $category->getPath($row->category_id);
-                $thema       = chopString($row->thema, 15);
-                $content     = chopString(strip_tags($row->content), 25);
-                $searchterm  = str_replace(array('^', '.', '?', '*', '+', '{', '}', '(', ')', '[', ']', '"'), '', $searchterm);
-                $searchterm  = preg_quote($searchterm, '/');
-                $searchItems = explode(' ', $searchterm);
-
-                if (PMF_String::strlen($searchItems[0]) > 1) {
-                    foreach ($searchItems as $item) {
-                        if (PMF_String::strlen($item) > 2) {
-                            $thema = PMF_String::preg_replace_callback('/'
-                                .'('.$item.'="[^"]*")|'
-                                .'((href|src|title|alt|class|style|id|name|dir|onclick|ondblclick|onmousedown|onmouseup|onmouseover|onmousemove|onmouseout|onkeypress|onkeydown|onkeyup)="[^"]*'.$item.'[^"]*")|'
-                                .'('.$item.')'
-                                .'/mis',
-                                "highlight_no_links",
-                                $thema );
-                            $content = PMF_String::preg_replace_callback('/'
-                                .'('.$item.'="[^"]*")|'
-                                .'((href|src|title|alt|class|style|id|name|dir|onclick|ondblclick|onmousedown|onmouseup|onmouseover|onmousemove|onmouseout|onkeypress|onkeydown|onkeyup)="[^"]*'.$item.'[^"]*")|'
-                                .'('.$item.')'
-                                .'/mis',
-                                    "highlight_no_links",
-                                $content);
-                        }
-                    }
-                }
-
-                // Print the link to the faq record
-                $url = sprintf(
-                    '?%saction=artikel&amp;cat=%d&amp;id=%d&amp;artlang=%s&amp;highlight=%s',
-                    $sids,
-                    $row->category_id,
-                    $row->id,
-                    $row->lang,
-                    urlencode($_searchterm));
-
-                if ($instantRespnse) {
-                    $currentUrl = PMF_Link::getSystemRelativeUri('ajaxresponse.php').'index.php';
-                } else {
-                    $currentUrl = PMF_Link::getSystemRelativeUri();
-                }
-                $oLink            = new PMF_Link($currentUrl.$url);
-                $oLink->itemTitle = $row->thema;
-                $oLink->text      = $thema;
-                $oLink->tooltip   = $row->thema;
-                $output .=
-                    '<li><strong>'.$rubriktext.'</strong>: '.$oLink->toHtmlAnchor().'<br />'
-                    .'<div class="searchpreview"><strong>'.$PMF_LANG['msgSearchContent'].'</strong> '.$content.'...</div>'
-                    .'<br /></li>'."\n";
-            }
-        }
-        $output .= "</ul>\n";
-    } else {
-        $output = $PMF_LANG["err_noArticles"];
-    }
-
-    if (!$hasMore && ($num > $confPerPage)) {        
-        if ($faqconfig->get('main.enableRewriteRules')) {
-            $baseUrl = sprintf("search.html?search=%s&amp;seite=%d%s&amp;searchcategory=%d",
-                            urlencode($_searchterm),
-                            $seite,
-                            $langs,
-                            $cat);
-        } else {
-            $baseUrl = PMF_Link::getSystemRelativeUri() . '?'
-                     . (empty($sids) ? '' : "$sids&amp;")
-                     . 'action=search&amp;search=' . urlencode($_searchterm)
-                     . '&amp;seite=' . $seite . $langs
-                     . "&amp;searchcategory=" . $cat;
-        }
-                 
-        $options = array('baseUrl'         => $baseUrl,
-                         'total'           => $num,
-                         'perPage'         => $confPerPage,
-                         'pageParamName'   => 'seite',
-                         'nextPageLinkTpl' => '<a href="{LINK_URL}">' . $PMF_LANG["msgNext"] . '</a>',
-                         'prevPageLinkTpl' => '<a href="{LINK_URL}">' . $PMF_LANG["msgPrevious"] . '</a>',
-                         'layoutTpl'       => '<p align="center"><strong>{LAYOUT_CONTENT}</strong></p>');
-        
-        $pagination = new PMF_Pagination($options);
-        $output    .= $pagination->render();
-    }
-
-    return $output;
-}
 
 /**
  * Callback function for filtering HTML from URLs and images
@@ -794,7 +514,7 @@ function highlight_no_links(Array $matches)
     $prefix          = isset($matches[3]) ? $matches[3] : '';
     $item            = isset($matches[4]) ? $matches[4] : '';
     $postfix         = isset($matches[5]) ? $matches[5] : '';
-    
+
     if (!empty($item)) {
         return '<span class="highlight">'.$prefix.$item.$postfix.'</span>';
     }
@@ -849,7 +569,7 @@ function PMF_htmlentities($string, $quote_style = ENT_QUOTES, $charset = 'UTF-8'
 function buildAttachmentUrl($recordId, $filename, $forHtml = true)
 {
     $amp = $forHtml ? '&amp;' : '&';
-    
+
     return sprintf('index.php?action=attachment%sid=%s%sfile=%s', $amp, $recordId, $amp, $filename);
 }
 
@@ -861,12 +581,12 @@ function buildAttachmentUrl($recordId, $filename, $forHtml = true)
  */
 function isAttachmentDirOk($id)
 {
-	if ($id == null) {
-		return false;
-	}
-	
-    $recordAttachmentsDir = PMF_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $id; 
-    
+    if ($id == null) {
+        return false;
+    }
+
+    $recordAttachmentsDir = PMF_ATTACHMENTS_DIR . DIRECTORY_SEPARATOR . $id;
+
     return false !== PMF_ATTACHMENTS_DIR && file_exists(PMF_ATTACHMENTS_DIR) && is_dir(PMF_ATTACHMENTS_DIR) &&
            file_exists($recordAttachmentsDir) && is_dir($recordAttachmentsDir);
 }
@@ -885,7 +605,7 @@ function isAttachmentDirOk($id)
  * @param  string  $active       Active
  * @access public
  * @author Thorsten Rinne <thorsten@phpmyfaq.de>
- * 
+ *
  * @return string
  */
 function addMenuEntry($restrictions = '', $action = '', $caption = '', $active = '')
@@ -912,49 +632,49 @@ function addMenuEntry($restrictions = '', $action = '', $caption = '', $active =
         $action,
         $_caption,
         "\n");
-           
+
     return evalPermStr($restrictions) ? $output : '';
 }
 
 /**
  * Parse and check a permission string
- * 
+ *
  * Permissions are glued with each other as follows
  * - '+' stands for 'or'
  * - '*' stands for 'and'
- * 
+ *
  * No braces will be parsed, only simple expressions
  * @example right1*right2+right3+right4*right5
- * 
+ *
  * @author Anatoliy Belsky <anatoliy.belsky@mayflower.de>
  * @param string $restrictions
- * 
+ *
  * @return boolean
  */
 function evalPermStr($restrictions)
 {
     global $permission;
-    
+
     if(false !== strpos($restrictions, '+')) {
-    	$retval = false;
+        $retval = false;
         foreach (explode('+', $restrictions) as $_restriction) {
-			$retval = $retval || evalPermStr($_restriction);
-			if($retval) {
-				break;
-			}
-        }        
+            $retval = $retval || evalPermStr($_restriction);
+            if($retval) {
+                break;
+            }
+        }
     } else if(false !== strpos($restrictions, '*')) {
-    	$retval = true;
+        $retval = true;
         foreach (explode('*', $restrictions) as $_restriction) {
             if(!isset($permission[$_restriction]) || !$permission[$_restriction]) {
                 $retval = false;
-                break;   
+                break;
             }
-        }  
+        }
     } else {
-    	$retval = strlen($restrictions) > 0 && isset($permission[$restrictions]) && $permission[$restrictions];
+        $retval = strlen($restrictions) > 0 && isset($permission[$restrictions]) && $permission[$restrictions];
     }
-    
+
     return $retval;
 }
 
@@ -1010,7 +730,7 @@ function PageSpan($code, $start, $end, $akt)
 function build_insert($query, $table)
 {
    $db = PMF_Db::getInstance();
-   
+
     if (!$result = $db->query($query)) {
         return;
     }

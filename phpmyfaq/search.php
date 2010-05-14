@@ -1,7 +1,7 @@
 <?php
 /**
  * The fulltext search page
- * 
+ *
  * PHP Version 5.2
  *
  * The contents of this file are subject to the Mozilla Public License
@@ -75,12 +75,15 @@ if (!is_null($inputSearchTerm) || !is_null($search)) {
     if (!is_null($inputSearchTerm)) {
         $inputSearchTerm = $db->escape_string(strip_tags($inputSearchTerm));
     }
+
     if (!is_null($search)) {
         $inputSearchTerm = $db->escape_string(strip_tags($search));
     }
-    $printResult      = searchEngine($inputSearchTerm, $inputCategory, $allLanguages);
-    $inputSearchTerm  = stripslashes($inputSearchTerm);
-    
+
+    $printResult = $faqsearch->renderSearchResult($inputSearchTerm, $inputCategory, $allLanguages);
+
+    $inputSearchTerm = stripslashes($inputSearchTerm);
+
     $faqsearch->logSearchTerm($inputSearchTerm);
 }
 
@@ -94,17 +97,17 @@ $category->buildTree();
 $openSearchLink = sprintf('<a class="searchplugin" href="#" onclick="window.external.AddSearchProvider(\'%s/opensearch.php\');">%s</a>',
     PMF_Link::getSystemUri('/index.php'),
     $PMF_LANG['opensearch_plugin_install']);
-    
+
 $mostPopularSearches   = '';
 $mostPopularSearchData = $faqsearch->getMostPopularSearches($faqconfig->get('main.numberSearchTerms'));
 
 foreach ($mostPopularSearchData as $searchItem) {
-	if (PMF_String::strlen($searchItem['searchterm']) > 0) {
+    if (PMF_String::strlen($searchItem['searchterm']) > 0) {
         $mostPopularSearches .= sprintf('<li><a href="?search=%s&submit=Search&action=search">%s</a> (%dx)</li>',
             urlencode($searchItem['searchterm']),
             $searchItem['searchterm'],
             $searchItem['number']);
-	}
+    }
 }
 
 $helper = PMF_Helper_Category::getInstance();

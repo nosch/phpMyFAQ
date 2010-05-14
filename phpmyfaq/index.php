@@ -4,7 +4,7 @@
  * language, gets and sets all cookie, post and get informations and includes
  * the templates we need and set all internal variables to the template
  * variables. That's all.
- * 
+ *
  * PHP Version 5.2
  *
  * The contents of this file are subject to the Mozilla Public License
@@ -285,7 +285,7 @@ if (!is_null($solution_id)) {
         $keywords        = ',' . $faq->getRecordKeywords($id);
         $metaDescription = PMF_Utils::makeShorterText(strip_tags($faqData['content']), 12);
     }
-} 
+}
 
 //
 // Handle the Tagging ID
@@ -378,9 +378,9 @@ if ($hasTags && (($action == 'artikel') || ($action == 'show'))) {
 //
 /*
 if (stristr($_SERVER['HTTP_USER_AGENT'], 'iPhone')) {
-	$templateSet = 'mobile';
+    $templateSet = 'mobile';
 } else {
-	$templateSet = $faqconfig->get('main.templateSet');
+    $templateSet = $faqconfig->get('main.templateSet');
 }
 */
 $tpl = new PMF_Template(array('index'        => 'index.tpl',
@@ -426,7 +426,7 @@ $main_template_vars = array(
                              $plr->getMsg('plmsgGuestOnline', $usersOnLine[0]) .
                              $plr->getMsg('plmsgRegisteredOnline',$usersOnLine[1]),
     'stickyRecordsHeader' => $PMF_LANG['stickyRecordsHeader'],
-    'copyright'           => 'powered by <a href="http://www.phpmyfaq.de" target="_blank">phpMyFAQ</a> ' . 
+    'copyright'           => 'powered by <a href="http://www.phpmyfaq.de" target="_blank">phpMyFAQ</a> ' .
                              $faqconfig->get('main.currentVersion'));
 
 if ('main' == $action || 'show' == $action) {
@@ -440,7 +440,7 @@ if ('main' == $action || 'show' == $action) {
             'categoryId'      => ($cat === 0) ? '%' : (int)$cat));
     }
 }
-                             
+
 $stickyRecordsParams = $faq->getStickyRecords();
 if (!isset($stickyRecordsParams['error'])) {
     $tpl->processBlock('index', 'stickyRecordsList', array(
@@ -524,7 +524,7 @@ $tpl->includeTemplate('loginBox', 'index');
 
 // generate top ten list
 if ($faqconfig->get('main.orderingPopularFaqs') == 'visits') {
-    
+
     // top ten list for most viewed entries
     $toptenParams = $faq->getTopTen('visits');
     if (!isset($toptenParams['error'])) {
